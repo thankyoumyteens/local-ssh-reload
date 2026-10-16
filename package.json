@@ -1,0 +1,73 @@
+{
+  "name": "local-ssh-reload",
+  "displayName": "Local SSH Reload",
+  "description": "A small, local-only Remote SSH window recovery helper.",
+  "version": "0.2.0",
+  "publisher": "walter-local",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "./extension.js",
+  "extensionKind": [
+    "ui"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onResolveRemoteAuthority:ssh-remote"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "package": "python3 package.py"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "localSshReload.pause",
+        "title": "Local SSH Reload: Pause"
+      },
+      {
+        "command": "localSshReload.resume",
+        "title": "Local SSH Reload: Resume"
+      },
+      {
+        "command": "localSshReload.showLog",
+        "title": "Local SSH Reload: Show Log"
+      }
+    ],
+    "configuration": {
+      "title": "Local SSH Reload",
+      "properties": {
+        "localSshReload.enabled": {
+          "type": "boolean",
+          "default": true,
+          "scope": "machine",
+          "description": "Automatically reload disconnected SSH windows."
+        },
+        "localSshReload.logFilePath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "description": "Local log file path. Absolute path or ~/ supported. Empty uses the VS Code extension log directory. Changes apply immediately."
+        },
+        "localSshReload.logLevel": {
+          "type": "string",
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error",
+            "off"
+          ],
+          "default": "debug",
+          "scope": "machine",
+          "description": "Minimum log level for both Output and file logs. Debug records every probe and decision."
+        }
+      }
+    }
+  }
+}

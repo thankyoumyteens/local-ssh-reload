@@ -1,0 +1,31 @@
+# Extension packages and build output
+*.vsix
+node_modules/
+coverage/
+.nyc_output/
+
+# Runtime logs
+*.log
+*.log.*
+*.jsonl
+*.jsonl.*
+logs/
+
+# Python packaging helpers
+__pycache__/
+*.py[cod]
+.venv/
+
+# Local IDE settings and OS files
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local environment and temporary files
+.env
+.env.*
+!.env.example
+*.tmp
+*.swp
+*.swo
+*~
