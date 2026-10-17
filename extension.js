@@ -187,9 +187,36 @@ function activate(context) {
     vscode.workspace.onDidChangeWorkspaceFolders(() => { epoch++; failures = 0; logger.log('info', 'workspace.changed'); }),
     { dispose() { disposed = true; epoch++; clearTimeout(timer); logger.log('info', 'deactivation'); void logger.flush(); } }
   );
-  if (vscode.workspace.getConfiguration('window').get('dialogStyle') !== 'custom') {
-    logger.log('warn', 'dialog.native', { message: 'Tip: set "window.dialogStyle": "custom" so a reload can dismiss connection dialogs.' });
+  async function ensureCustomDialogs() {
+    if (!enabled()) {
+      logger.log('debug', 'dialog.setup.skipped', { reason: 'extension disabled' });
+      return;
+    }
+    try {
+      const config = vscode.workspace.getConfiguration('window');
+      const previous = config.get('dialogStyle');
+      if (previous === 'custom') {
+        logger.log('debug', 'dialog.setup.unchanged', { value: previous });
+        return;
+      }
+      // Global writes the local user's settings because this is a UI extension.
+      // Do not modify workspace or remote settings, or force a reload here.
+      logger.log('info', 'dialog.setup.updating', { previous, value: 'custom', target: 'Global' });
+      await config.update('dialogStyle', 'custom', vscode.ConfigurationTarget.Global);
+      const effective = vscode.workspace.getConfiguration('window').get('dialogStyle');
+      logger.log(effective === 'custom' ? 'info' : 'warn', 'dialog.setup.updated', {
+        previous, value: 'custom', effective, target: 'Global'
+      });
+    } catch (err) {
+      logger.log('error', 'dialog.setup.failed', { error: errorDetails(err) });
+      void vscode.window.showWarningMessage(
+        'Local SSH Reload: Could not set window.dialogStyle to custom. ' +
+        'Set it manually in local User Settings; automatic reconnect remains enabled.'
+      );
+    }
   }
+  // Configuration writes must never block the connection watcher.
+  void ensureCustomDialogs();
   void tick();
 }
 

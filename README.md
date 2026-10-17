@@ -25,9 +25,10 @@ test/                 恢复策略、模拟扩展和日志测试
 ## 安装
 
 1. 禁用之前安装的 RemoteAutoReload，避免两个扩展同时重载。
-2. 运行 `Extensions: Install from VSIX...`，选择 `local-ssh-reload-0.2.0.vsix`。
+2. 运行 `Extensions: Install from VSIX...`，选择 `local-ssh-reload-0.2.1.vsix`。
    安装到本机，不要安装到远端。
-3. 本机用户设置加入 `"window.dialogStyle": "custom"`，再 Reload Window 一次。
+3. Reload Window 一次以启用扩展。扩展在启用的 SSH 窗口启动时自动将本机用户设置
+   `window.dialogStyle` 设为 `custom`，已是 `custom` 时不重复写入。
 
 ## 行为与限制
 
@@ -40,7 +41,11 @@ test/                 恢复策略、模拟扩展和日志测试
 - 每个工作区 15 分钟内最多重载 3 次，两次至少间隔 60 秒，计数跨重载保存。
   达到上限后等待旧记录过期，不无限快速重载。
 - 不测试 SSH 可达性，因此网络仍断开时也可能尝试重载；上限约束这个行为。
-- 原生系统弹窗可能在重载后残留，因此建议 `window.dialogStyle: custom`。
+- 启动时自动设置本机用户级 `window.dialogStyle: custom`，不修改远端或项目设置。
+  这会影响该用户配置中的所有 VS Code 窗口；卸载扩展后保留此设置。
+  扩展被 `localSshReload.enabled: false` 关闭时不自动修改。
+  写入失败会记录异常并提示手动设置，连接检测继续运行；不会为此强制重载。
+  已存在的原生弹窗仍需手动关闭一次。
 - 不保证每种断线都能识别：如果文件 API 一直挂起或返回其他错误，会等待。
 - 扩展需要本地 extension host 仍能响应；只支持受信任的工作区。
 - VS Code 扩展本身没有细粒度权限沙箱；以上描述是代码实际行为，而非系统权限限制。
