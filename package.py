@@ -20,10 +20,14 @@ manifest = f'''<?xml version="1.0" encoding="utf-8"?>
   </Metadata>
   <Installation><InstallationTarget Id="Microsoft.VisualStudio.Code"/></Installation>
   <Dependencies/>
-  <Assets><Asset Type="Microsoft.VisualStudio.Code.Manifest" Path="extension/package.json" Addressable="true"/></Assets>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.Code.Manifest" Path="extension/package.json" Addressable="true"/>
+    <Asset Type="Microsoft.VisualStudio.Services.Content.License" Path="extension/LICENSE" Addressable="true"/>
+  </Assets>
 </PackageManifest>'''
 types = '''<?xml version="1.0" encoding="utf-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Override PartName="/extension/LICENSE" ContentType="text/plain"/>
   <Default Extension="json" ContentType="application/json"/>
   <Default Extension="js" ContentType="application/javascript"/>
   <Default Extension="md" ContentType="text/markdown"/>
@@ -32,6 +36,6 @@ types = '''<?xml version="1.0" encoding="utf-8"?>
 with ZipFile(root / name, 'w', ZIP_DEFLATED) as z:
     z.writestr('extension.vsixmanifest', manifest)
     z.writestr('[Content_Types].xml', types)
-    for file in ['package.json', 'extension.js', 'policy.js', 'logger.js', 'README.md']:
+    for file in ['package.json', 'extension.js', 'policy.js', 'logger.js', 'README.md', 'LICENSE']:
         z.write(root / file, 'extension/' + file)
 print(root / name)

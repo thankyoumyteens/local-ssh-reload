@@ -2,7 +2,7 @@
 
 自己维护的最小 VS Code 本地扩展，无第三方依赖、无遥测、不调用 shell、
 不读取 SSH 配置或密钥、不主动建立额外 SSH 连接。
-源码全部包含在 VSIX 中；不会发布到 Marketplace。
+源码全部包含在 VSIX 中；当前通过本地 VSIX 安装，尚未发布到 Marketplace。
 
 ## 开发环境
 
@@ -65,6 +65,21 @@ test/                 恢复策略、模拟扩展和日志测试
 }
 ```
 
+其他系统的日志路径示例（替换用户名）：
+
+```json
+// Linux
+"localSshReload.logFilePath": "~/.local/state/local-ssh-reload/reconnect.jsonl"
+```
+
+```json
+// Windows：使用正斜杠避免 JSON 反斜杠转义
+"localSshReload.logFilePath": "C:/Users/your-user/AppData/Local/local-ssh-reload/reconnect.jsonl"
+```
+
+Windows 也支持 `~/` 前缀；不展开 `%LOCALAPPDATA%`、`$HOME` 等环境变量。
+留空使用 VS Code 提供的默认日志目录，可免去各系统路径配置。
+
 - 日志同时写入输出面板 `Local SSH Reload` 和本机文件，格式为 JSONL，每行一条。
 - `logFilePath` 是文件路径，支持绝对路径与 `~/`；自动创建父目录。
   留空使用 VS Code 为扩展提供的日志目录，具体路径见 `log.configured` 记录。
@@ -101,3 +116,7 @@ code --extensionDevelopmentPath="$PWD"
 
 在打开的 Extension Development Host 中连接 SSH 主机，查看
 `Local SSH Reload: Show Log`，验证断线检测、恢复及日志文件写入。
+
+## 许可证
+
+本项目采用 [MIT License](LICENSE)，许可证同时包含在 VSIX 安装包内。
